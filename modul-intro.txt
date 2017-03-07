@@ -1,0 +1,69 @@
+JShell:
+http://www.theserverside.com/tip/JShell-The-new-Java-9-REPL
+
+Modules:
+http://blog.codefx.org/java/dev/features-project-jigsaw-java-9/
+Summary: http://blog.codefx.org/java/dev/javaone-2015-advanced-modular-development/
+http://openjdk.java.net/projects/jigsaw/j1/
+http://openjdk.java.net/projects/jigsaw/quick-start
+
+javac -d mods/ src/com/company/Main.java src/module-info.java
+java --module-path mods --module ModuleTest/com.company.Main kalle
+Greetings: kalle
+
+tree
+.
+├── mods
+│   ├── com
+│   │   └── company
+│   │       └── Main.class
+│   └── module-info.class
+├── ModuleTest.iml
+└── src
+    ├── com
+    │   └── company
+    │       └── Main.java
+    └── module-info.java
+
+jar -cf test.jar -C mods .
+jar --print-module-descriptor --file=test.jar
+java -cp test.jar com.company.Main kalle
+
+
+
+JLINK:
+http://openjdk.java.net/jeps/282
+
+jlink --module-path /usr/lib/jvm/java-9-oracle/jmods:mods --add-modules ModuleTest --output testapp
+jlink --list-plugins
+
+testapp/bin/java -cp test.jar com.company.Main kalle
+
+##Does not work (-vm=minimal):
+https://bugs.openjdk.java.net/browse/JDK-8156903 //Description
+http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8163256
+jlink --compress 2 --strip-debug --vm=minimal --module-path /usr/lib/jvm/java-9-oracle/jmods:mods --add-modules ModuleTest --output testapp2
+
+##Does not work (-Xdiag:resolver)
+jlink -Xdiag:resolver --compress 2 --strip-debug --launcher greetIt=testmodule/com.company.Main --module-path /usr/lib/jvm/java-9-oracle/jmods:bin --add-modules testmodule --output app5
+
+jlink --compress 2 --strip-debug --launcher greetIt=ModuleTest:com.company.Main --module-path /usr/lib/jvm/java-9-oracle/jmods:mods --add-modules ModuleTest --output testapp3
+
+cat Manifest.txt 
+Manifest-Version: 1.0
+Created-By: 1.7.0_06 (Oracle Corporation)
+Main-Class: com.company.Main
+
+jlink --compress 2 --strip-debug --launcher greetIt=testmodule/com.company.Main --module-path /usr/lib/jvm/java-9-oracle/jmods:bin --add-modules testmodule --output app4
+
+app4/bin/greetIt kalle
+Greetings: kalle
+
+cat app4/bin/greetIt 
+#!/bin/sh
+JLINK_VM_OPTIONS=
+DIR=`dirname $0`
+$DIR/java $JLINK_VM_OPTIONS -m testmodule/com.company.Main $@
+
+
+
