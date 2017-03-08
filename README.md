@@ -88,7 +88,11 @@ https://bugs.openjdk.java.net/browse/JDK-8156903
 jlink --vm=minimal --compress 2 --strip-debug  -p /usr/lib/jvm/java-9-oracle/jmods:mlib --add-modules com.greetings --output greetingApp4
 jlink --vm=server --compress 2 --strip-debug  -p mlib --add-modules com.greetings --output greetingApp4
 
-greetingApp/bin/java –Xdiag:resolver -m com.greetings/com.greetings.Main
+greetingApp/bin/java -Xdiag:resolver -m com.greetings/com.greetings.Main
+//java	–Xdiag:resolver	–mp	mods	–m	com.azul.zoop/com.azul.zoop.Main
+greetingApp/bin/java -Xlog:modules=debug -m com.greetings/com.greetings.Main
+
+java -Xdiag:resolver --module-path mlib --module com.greetings/com.greetings.Main
 ```
 
 ###Jmod
