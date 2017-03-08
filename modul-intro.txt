@@ -6,6 +6,7 @@ http://blog.codefx.org/java/dev/features-project-jigsaw-java-9/
 Summary: http://blog.codefx.org/java/dev/javaone-2015-advanced-modular-development/
 http://openjdk.java.net/projects/jigsaw/j1/
 http://openjdk.java.net/projects/jigsaw/quick-start
+http://openjdk.java.net/jeps/261
 
 javac -d mods/ src/com/company/Main.java src/module-info.java
 java --module-path mods --module ModuleTest/com.company.Main kalle
