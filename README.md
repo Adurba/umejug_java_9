@@ -1,5 +1,4 @@
 # UmeJUG Java 9
-[Presentation (Google slides)](https://docs.google.com/presentation/d/1ymR_wJvIp3XoOg6Eiz0mTGHgYeqKBrFdR5btnfsS41k/edit?usp=sharing)
 
 ##Prerequisites
 * Install Java 9
