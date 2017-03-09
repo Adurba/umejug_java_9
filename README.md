@@ -12,25 +12,21 @@
 jshell
 
 jshell> /help
+jshell> /open resource.txt
+jshell> /methods /vars /types
+jshell> streamS<tab>
 jshell> /exit
-jshell> /imports
 ```
 
 Test some of the examples from presentation:
 
 ```sh
-List<String> immutableList = List.of("one","two","three");
 immutableList.add("four");
 
-Optional<Integer> opt1 = Optional.of(4)
 opt1.ifPresentOrElse( x -> System.out.println("Result found: " + x), () -> System.out.println("Not Found."))
-
-Stream<Integer> stream = Stream.of(1,2,3,4,5,6,7,8,9,10)
 
 stream.takeWhile(x -> x < 4).forEach(a -> System.out.println(a))
 stream.dropWhile(x -> x < 4).forEach(a -> System.out.println(a)) 
-
-Supplier<Stream<Integer>> streamSupplier = () -> Stream.of(1,2,3,4,5,6,7,8,9,10);
 
 IntStream.iterate(2, x -> x < 20, x -> x * x).forEach(System.out::println)
 
@@ -45,31 +41,40 @@ ls /usr/lib/jvm/java-9-oracle/jmods
 java --list-modules
 ```
 
-###Build first module
+###Build dependent modules
 ```sh
-javac -d mods/com.greetings src/com.greetings/module-info.java src/com.greetings/com/greetings/Main.java
-java --module-path mods -m com.greetings/com.greetings.Main
-java --module-path mods --list-modules com.greetings
-```
-
-###Build multiple dependent modules
-```sh
+#Build astro by defining module-info and java-files
 javac -d mods/org.astro src/org.astro/module-info.java src/org.astro/org/astro/World.java
+
+#Build greetings by adding path to astro-module
 javac --module-path mods -d mods/com.greetings src/com.greetings/module-info.java src/com.greetings/com/greetings/Main.java
+
+#Run greetings program by specifying module and package
 java --module-path mods -m com.greetings/com.greetings.Main
+
+#List modules in module greetings (class)
 java --module-path mods --list-modules com.greetings
 
+#Build all modules at the same time by specifying --module-source-path
 javac -d mods --module-source-path src $(find src -name *.java)
 
+#Build jar with version
 jar --create --file=mlib/org.astro@1.0.jar --module-version=1.0 -C mods/org.astro .
+
+#Alt1 - Build jar without version (top-level)
 jar --create --file=mlib/com.greeting.jar -C mods/com.greetings .
+
+#Alt1 - Run program by specifying module and Main.class
+java --module-path mlib --module com.greetings/com.greetings.Main
+
+#Alt2 - Build jar and specify main-class
 jar --create --file=mlib/com.greeting.jar --main-class=com.greetings.Main -C mods/com.greetings .
 
-java --module-path mlib --module com.greetings/com.greetings.Main
+# Alt2 - Run program by specifying module only
 java -p mlib -m com.greetings
-java -p mlib --list-modules org.astro
 
-javac -d mods --module-source-path src $(find src -name *.java)
+#List modules in module astro (jar) 
+java -p mlib --list-modules org.astro
 ```
 
 ###Jlink
