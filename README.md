@@ -79,15 +79,30 @@ java -p mlib --list-modules org.astro
 
 ###Jlink
 ```sh
+
+#Linking modules from JRE with local ones
 jlink -p /usr/lib/jvm/java-9-oracle/jmods:mlib --add-modules com.greetings --output greetingApp
+
+#List modules in create JRE
 greetingApp/bin/java --list-modules
+
+#Run greeting in JRE
 greetingApp/bin/java -m com.greetings/com.greetings.Main
+
+#Check size
 du -sh greetingApp
+
+#Compress created JRE
 jlink --compress 2 --strip-debug -p /usr/lib/jvm/java-9-oracle/jmods:mlib --add-modules com.greetings --output greetingApp2
 du -sh greetingApp2
+
+#Compress created JRE and create launer
 jlink --compress 2 --strip-debug --launcher greetMe=com.greetings/com.greetings.Main  -p /usr/lib/jvm/java-9-oracle/jmods:mlib --add-modules com.greetings --output greetingApp3
+
+#Run launcher i JRE
 greetingApp3/bin/greetMe
 
+#Compress through --vm command (does it work)? minimal|client|server|all
 https://bugs.openjdk.java.net/browse/JDK-8156903
 jlink --vm=minimal --compress 2 --strip-debug  -p /usr/lib/jvm/java-9-oracle/jmods:mlib --add-modules com.greetings --output greetingApp4
 jlink --vm=server --compress 2 --strip-debug  -p mlib --add-modules com.greetings --output greetingApp4
@@ -95,6 +110,7 @@ jlink --vm=server --compress 2 --strip-debug  -p mlib --add-modules com.greeting
 
 ####Module dependendcies
 ```sh
+#Show how module dependencies are loaded
 greetingApp/bin/java -Xdiag:resolver -m com.greetings/com.greetings.Main
 greetingApp/bin/java -Xlog:modules=debug -m com.greetings/com.greetings.Main
 java -Xdiag:resolver --module-path mlib --module com.greetings/com.greetings.Main
@@ -102,8 +118,16 @@ java -Xdiag:resolver --module-path mlib --module com.greetings/com.greetings.Mai
 
 ###Jmod
 ```sh
-jmod create --class-path mods/com.greetings greet.jmod
-jmod create --class-path mods/org.astro astro.jmod
+#Create JMOD of greeting
+jmod create --class-path mods/com.greetings mymods/greet.jmod
 unzip -l greet.jmod
+
+#Create JMOD of astro
+jmod create --class-path mods/org.astro mymods/astro.jmod
+
+#Link modules from jmod instead of jar
+jlink -p /usr/lib/jvm/java-9-oracle/jmods:mymods --add-modules com.greetings:org.astro --output greetingApp4
+
+#Run 
 greetingApp4/bin/java -m com.greetings/com.greetings.Main
 ```
